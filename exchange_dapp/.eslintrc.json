@@ -39,7 +39,8 @@
     "prettier/prettier": [
       "error",
       {
-        "semi": false
+        "semi": true,
+        "endOfLine": "auto"
       }
     ],
     "@typescript-eslint/explicit-module-boundary-types": "off",

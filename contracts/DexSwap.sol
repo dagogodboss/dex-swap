@@ -17,7 +17,7 @@ contract DexSwap is Ownable {
 
     string public name;
     Dagogo public rewardToken;
-    uint256 public price = 1; // this means that 1 Dagogo token is equal to 1 DAI which is equal 1 usd
+    uint public price = 1; // this means that 1 Dagogo token is equal to 1 DAI which is equal 1 usd
     IERC20 public externalToken;
     uint256 public burnRatio = 2;
 

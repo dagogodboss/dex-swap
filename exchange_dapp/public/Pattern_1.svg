@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Слой_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 471 651" style="enable-background:new 0 0 471 651;" xml:space="preserve">
+<style type="text/css">
+	.st0{filter:url(#filter-1);}
+	.st1{fill:url(#Rectangle-3-Copy-5_3_);}
+	.st2{filter:url(#filter-3);}
+	.st3{fill:#FFFFFF;}
+</style>
+<filter  filterUnits="objectBoundingBox" height="133.3%" id="filter-3" width="133.3%" x="-16.7%" y="-13.2%">
+	<feOffset  dx="0" dy="10" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+	<feMorphology  in="SourceAlpha" operator="erode" radius="50" result="shadowInner"></feMorphology>
+	<feOffset  dx="0" dy="10" in="shadowInner" result="shadowInner"></feOffset>
+	<feComposite  in="shadowOffsetOuter1" in2="shadowInner" operator="out" result="shadowOffsetOuter1"></feComposite>
+	<feGaussianBlur  in="shadowOffsetOuter1" result="shadowBlurOuter1" stdDeviation="14.5"></feGaussianBlur>
+	
+		<feColorMatrix  in="shadowBlurOuter1" result="shadowMatrixOuter1" type="matrix" values="0 0 0 0 0.48627451   0 0 0 0 0.623529412   0 0 0 0 0.678431373  0 0 0 0.10045856 0">
+		</feColorMatrix>
+	<feMerge>
+		<feMergeNode  in="shadowMatrixOuter1"></feMergeNode>
+		<feMergeNode  in="SourceGraphic"></feMergeNode>
+	</feMerge>
+</filter>
+<filter  filterUnits="objectBoundingBox" height="115.0%" id="filter-1" width="133.3%" x="-16.7%" y="-5.9%">
+	<feOffset  dx="0" dy="10" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+	<feMorphology  in="SourceAlpha" operator="erode" radius="50" result="shadowInner"></feMorphology>
+	<feOffset  dx="0" dy="10" in="shadowInner" result="shadowInner"></feOffset>
+	<feComposite  in="shadowOffsetOuter1" in2="shadowInner" operator="out" result="shadowOffsetOuter1"></feComposite>
+	<feGaussianBlur  in="shadowOffsetOuter1" result="shadowBlurOuter1" stdDeviation="14.5"></feGaussianBlur>
+	
+		<feColorMatrix  in="shadowBlurOuter1" result="shadowMatrixOuter1" type="matrix" values="0 0 0 0 0.48627451   0 0 0 0 0.623529412   0 0 0 0 0.678431373  0 0 0 0.10045856 0">
+		</feColorMatrix>
+	<feMerge>
+		<feMergeNode  in="shadowMatrixOuter1"></feMergeNode>
+		<feMergeNode  in="SourceGraphic"></feMergeNode>
+	</feMerge>
+</filter>
+<title>Pattern_1</title>
+<desc>Created with Sketch.</desc>
+<g id="Page-1">
+	<g id="Protofire_desktop" transform="translate(-17.000000, -6279.000000)">
+		
+			<g id="Pattern_1" transform="translate(252.500000, 6594.000000) rotate(-360.000000) translate(-252.500000, -6594.000000) translate(18.000000, 6270.000000)">
+			<g id="Group-21" class="st0">
+				
+					<linearGradient id="Rectangle-3-Copy-5_3_" gradientUnits="userSpaceOnUse" x1="90.6002" y1="146.3358" x2="180.3816" y2="324.7871" gradientTransform="matrix(6.123234e-17 -1 1 6.123234e-17 -89.7233 558.7233)">
+					<stop  offset="0" style="stop-color:#F54703"/>
+					<stop  offset="1" style="stop-color:#FAC902"/>
+				</linearGradient>
+				<path id="Rectangle-3-Copy-5_2_" class="st1" d="M81.1,413.4c-5.5,5.5-5.5,14.3,0,19.8l54.8,54.8c5.5,5.5,14.3,5.5,19.8,0
+					l54.8-54.8c5.5-5.5,5.5-14.3,0-19.8l-54.8-54.8c-5.5-5.5-14.3-5.5-19.8,0L81.1,413.4z M45.7,378l54.8-54.8c25-25,65.5-25,90.5,0
+					l54.8,54.8c25,25,25,65.5,0,90.5L191,523.3c-25,25-65.5,25-90.5,0l-54.8-54.8C20.7,443.5,20.7,403,45.7,378z"/>
+			</g>
+			
+				<g id="Group-21_1_" transform="translate(323.500000, 323.000000) rotate(-270.000000) translate(-323.500000, -323.000000) translate(178.000000, 177.500000)" class="st2">
+				<path id="Rectangle-3-Copy-5_2_" class="st3" d="M3.6,135.9c-5.5,5.5-5.5,14.3,0,19.8l54.8,54.8c5.5,5.5,14.3,5.5,19.8,0
+					l54.8-54.8c5.5-5.5,5.5-14.3,0-19.8L78.1,81.1c-5.5-5.5-14.3-5.5-19.8,0L3.6,135.9z M-31.8,100.5L23,45.7c25-25,65.5-25,90.5,0
+					l54.8,54.8c25,25,25,65.5,0,90.5l-54.8,54.8c-25,25-65.5,25-90.5,0L-31.8,191C-56.8,166-56.8,125.5-31.8,100.5z"/>
+			</g>
+		</g>
+	</g>
+</g>
+</svg>
