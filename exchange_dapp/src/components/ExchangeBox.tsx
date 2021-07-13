@@ -29,7 +29,7 @@ const ExchangeBox = ({
   const [price, setPrice] = useState<any>(0);
   const [selectedToken, setSelectedToken] = useState<any>({});
   const [outputAmount, setOutputAmount] = useState<any>();
-  const [inputAmount, setInputAmount] = useState<any>(0);
+  const [inputAmount, setInputAmount] = useState<any>();
   const [erc20Token, setErc20Token] = useState<any>({});
   const [inputErrorClass, setInputErrorClass] = useState(false);
   const [buttonText, setButtonText] = useState('Buy Token');
@@ -45,6 +45,7 @@ const ExchangeBox = ({
     (async () => {
       if (!isEmpty(dexToken)) {
         try {
+          setErrorMessage('');
           setPrice(exchangeRate(convertToEther(await dexToken.price())));
         } catch (e) {
           setErrorMessage(
@@ -66,13 +67,11 @@ const ExchangeBox = ({
           );
           setRewardTokenBalance(balance);
         } catch (e) {
-          setErrorMessage(
-            'Oops we encountered and Error. Please make sure you are connected to Rinkeby Network on Your MetaMask',
-          );
+          console.log(e, signer);
         }
       }
     })();
-  }, [active]);
+  }, [active, signer]);
   const dappTok = [
     {
       value: smartContract.protoFire,
@@ -91,6 +90,7 @@ const ExchangeBox = ({
         .then((balance) => {
           e.balance = balance;
           setSelectedToken(e);
+          setErrorMessage('');
         })
         .catch((errMessage) => {
           setErrorMessage(
@@ -149,6 +149,7 @@ const ExchangeBox = ({
   useEffect(() => {
     if (!isEmpty(selectedToken) && active) {
       try {
+        setErrorMessage('');
         setErc20Token(
           new ethers.Contract(
             sellToken ? rewardToken.address : selectedToken.value,
@@ -180,7 +181,7 @@ const ExchangeBox = ({
       }
     }
     if (!active) {
-      setButtonText('Connect To Wallet');
+      setButtonText('Click Connect Wallet Button');
       setButtonColor('btn-warning');
       return false;
     }
@@ -198,6 +199,7 @@ const ExchangeBox = ({
       }
     }
     if (parseFloat(outputAmount) === 0) {
+      setButtonText('Empty Output Amount');
       return false;
     }
     return true;
