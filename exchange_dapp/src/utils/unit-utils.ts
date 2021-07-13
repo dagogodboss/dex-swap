@@ -1,9 +1,13 @@
-import { ethers } from "ethers";
+import { ethers } from 'ethers';
 
-export const convertToEther = (bigNumber:any) => {
-    return ethers.utils.formatUnits(bigNumber);
-}
+export const convertToEther = (bigNumber: any) => {
+  return ethers.utils.formatEther(bigNumber);
+};
 
-export const exchangeRate = (price: any) :number => {
-    return price * 10 ** 18;
-} 
+export const convertToWei = (number: any) => {
+  return ethers.utils.parseEther(number);
+};
+
+export const exchangeRate = (price: any): number => {
+  return price * 10 ** 18;
+};

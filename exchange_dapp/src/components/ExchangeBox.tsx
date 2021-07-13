@@ -3,9 +3,14 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
 import { isEmpty } from 'utils/func-helper';
-import { getTokenBalance } from 'utils/token-util';
+import { Erc20Abi, getTokenBalance } from 'utils/token-util';
 import * as smartContract from '../contracts/contract-address.json';
-import { convertToEther, exchangeRate } from '../utils/unit-utils';
+import {
+  convertToEther,
+  convertToWei,
+  exchangeRate,
+} from '../utils/unit-utils';
+import Loading from './Loading';
 
 const customStyle = {
   control: (provided: any, state: any) => ({
@@ -21,8 +26,19 @@ const ExchangeBox = ({
   account,
   signer,
 }: any) => {
-  const [price, setPrice] = useState<number | string>('...');
+  const [price, setPrice] = useState<any>(0);
   const [selectedToken, setSelectedToken] = useState<any>({});
+  const [outputAmount, setOutputAmount] = useState<any>();
+  const [inputAmount, setInputAmount] = useState<any>(0);
+  const [erc20Token, setErc20Token] = useState<any>({});
+  const [inputErrorClass, setInputErrorClass] = useState(false);
+  const [buttonText, setButtonText] = useState('Buy Token');
+  const [buttonColor, setButtonColor] = useState('btn-info');
+  const [buttonSize, setButtonSize] = useState('');
+  const [sellToken, setSellToken] = useState<any>(false);
+  const [loading, setLoading] = useState<any>(false);
+  const [disableOutput, setDisableOutput] = useState<any>(true);
+  const [rewardTokenBalance, setRewardTokenBalance] = useState<any>(0);
   useEffect(() => {
     (async () => {
       if (!isEmpty(dexToken)) {
@@ -31,6 +47,18 @@ const ExchangeBox = ({
     })();
   }, [dexToken]);
 
+  useEffect(() => {
+    (async () => {
+      if (active) {
+        const balance = await getTokenBalance(
+          rewardToken.address,
+          account,
+          signer,
+        );
+        setRewardTokenBalance(balance);
+      }
+    })();
+  }, [active]);
   const dappTok = [
     {
       value: smartContract.protoFire,
@@ -98,17 +126,134 @@ const ExchangeBox = ({
       ),
     },
   ];
+  useEffect(() => {
+    if (!isEmpty(selectedToken) && active) {
+      setErc20Token(
+        new ethers.Contract(
+          sellToken ? rewardToken.address : selectedToken.value,
+          Erc20Abi,
+          signer,
+        ),
+      );
+    }
+  }, [selectedToken]);
 
-  const performExchange = (e: any) => {
-    e.preventDefault();
+  const validate = (): boolean => {
+    if (parseFloat(inputAmount) === 0) {
+      setInputErrorClass(true);
+      setButtonText(sellToken ? 'Sell Token' : 'Buy Token');
+      setInputAmount(0);
+      return false;
+    }
+    if (!active) {
+      if (parseFloat(outputAmount) > parseFloat(rewardTokenBalance)) {
+        setButtonText('Insufficient Funds');
+        setButtonColor('btn-danger');
+        setButtonSize('btn-lg');
+        return false;
+      }
+    }
+    if (!active) {
+      setButtonText('Connect To Wallet');
+      setButtonColor('btn-warning');
+      return false;
+    }
+    if (isEmpty(selectedToken)) {
+      setButtonText('Select Token');
+      setButtonColor('btn-danger');
+      return false;
+    }
+    if (selectedToken.balance !== undefined) {
+      if (parseFloat(inputAmount) > parseFloat(selectedToken.balance)) {
+        setButtonText('Insufficient Funds');
+        setButtonColor('btn-danger');
+        setButtonSize('btn-lg');
+        return false;
+      }
+    }
+    if (parseFloat(outputAmount) === 0) {
+      return false;
+    }
+    return true;
   };
 
+  useEffect(() => {
+    validate();
+    if (Number(inputAmount) > 0) {
+      setInputErrorClass(false);
+      setButtonText(sellToken ? 'Sell Token' : 'Buy Token');
+      setButtonColor('btn-info');
+      setButtonSize('btn-md');
+      return;
+    }
+    if (active && !isEmpty(selectedToken)) {
+      setInputAmount(inputAmount);
+      const amount = parseFloat(inputAmount) * parseFloat(price);
+      setOutputAmount(amount);
+    }
+  }, [inputAmount, active, selectedToken]);
+
+  const performExchange = async (e: any) => {
+    e.preventDefault();
+    if (validate()) {
+      try {
+        setLoading(true);
+        const approve = await erc20Token.approve(
+          dexToken.address,
+          convertToWei(inputAmount),
+        );
+        await approve.wait(1);
+        const buy = await dexToken.buyTokens(
+          selectedToken.value,
+          convertToWei(inputAmount),
+        );
+        await buy.wait(1);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    }
+  };
+
+  const sellUserToken = async (e: any) => {
+    e.preventDefault();
+    if (validate()) {
+      try {
+        setLoading(true);
+        const approve = await erc20Token.approve(
+          dexToken.address,
+          convertToWei(outputAmount.toString()),
+        );
+        await approve.wait(1);
+        const sell = await dexToken.sellTokens(
+          selectedToken.value,
+          convertToWei(outputAmount.toString()),
+        );
+        await sell.wait(1);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    }
+  };
+  const wantToSell = (e: any) => {
+    const { target } = e;
+    setSellToken(target.checked);
+    if (target.checked) {
+      setButtonText('Sell Token');
+      return setDisableOutput(false);
+    }
+    setButtonText('Buy Token');
+    return setDisableOutput(true);
+  };
   return (
     <form className="login100-form validate-form">
       {active && (
         <div className="container-fluid">
           <div className="row">
-            <div className="col-8">
+            <div className="col-12">
               <div>
                 <div
                   className="bg1 p-l-5 p-t-10 user-account"
@@ -117,9 +262,30 @@ const ExchangeBox = ({
                     borderRadius: '0px',
                   }}
                 >
-                  <small className="text-white" style={{ marginTop: '4px' }}>
+                  <div
+                    className="text-white col"
+                    style={{
+                      marginTop: '4px',
+                      display: 'block',
+                      fontSize: 'small',
+                    }}
+                  >
                     Price of Token Per Stablecoin is {price}
-                  </small>
+                  </div>
+                  <div
+                    className="clear-both"
+                    style={{ border: '1px solid aliceblue' }}
+                  />
+                  <div
+                    className="text-white col"
+                    style={{
+                      marginTop: '4px',
+                      display: 'block',
+                      fontSize: 'small',
+                    }}
+                  >
+                    Protofire Balance {rewardTokenBalance} TOK
+                  </div>
                 </div>
               </div>
             </div>
@@ -141,8 +307,6 @@ const ExchangeBox = ({
           </div>
           <div className="col-4">
             <small>
-              {selectedToken.value !== undefined &&
-                selectedToken.value.substring(0, 7)}{' '}
               {selectedToken.name} {selectedToken.balance}
             </small>
           </div>
@@ -161,8 +325,13 @@ const ExchangeBox = ({
             </div>
             <div className="col-6">
               <div
-                className="wrap-input100"
+                className={
+                  inputErrorClass
+                    ? 'wrap-input100 validate-input alert-validate'
+                    : 'wrap-input100'
+                }
                 style={{ border: 'none', width: '107%' }}
+                data-validate="Enter an Amount greater than zero"
               >
                 <input
                   className="input100"
@@ -170,7 +339,14 @@ const ExchangeBox = ({
                   name="amount_to_buy"
                   required
                   placeholder="0.0"
+                  value={inputAmount}
                   style={{ textAlign: 'right' }}
+                  onChange={(e: any) => {
+                    setInputAmount(e.target.value);
+                    const amount =
+                      parseFloat(e.target.value) * parseFloat(price);
+                    setOutputAmount(amount);
+                  }}
                 />
                 <span className="focus-input100" />
               </div>
@@ -197,12 +373,19 @@ const ExchangeBox = ({
               >
                 <input
                   className="input100"
-                  type="text"
+                  type="number"
                   name="amount_to_buy"
                   required
                   placeholder="0.0"
                   style={{ textAlign: 'right' }}
-                  readOnly
+                  readOnly={disableOutput}
+                  value={outputAmount}
+                  onChange={(e) => {
+                    setOutputAmount(e.target.value);
+                    setInputAmount(
+                      parseFloat(e.target.value) / parseFloat(price),
+                    );
+                  }}
                 />
                 <span className="focus-input100" />
               </div>
@@ -210,14 +393,27 @@ const ExchangeBox = ({
           </div>
         </div>
       </div>
+      <div className="col form-check">
+        <input
+          type="checkbox"
+          onChange={wantToSell}
+          className="form-check-input"
+        />{' '}
+        SELL TOKEN
+      </div>
+
       <div className="container-login100-form-btn">
-        <button
-          type="submit"
-          className="login100-form-btn"
-          onClick={performExchange}
-        >
-          Buy Token
-        </button>
+        {loading ? (
+          <Loading />
+        ) : (
+          <button
+            type="submit"
+            className={`btn ${buttonColor} btn-block ${buttonSize} mt-2`}
+            onClick={sellToken ? sellUserToken : performExchange}
+          >
+            {buttonText}
+          </button>
+        )}
       </div>
     </form>
   );

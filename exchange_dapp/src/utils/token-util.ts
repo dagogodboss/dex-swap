@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { convertToEther } from './unit-utils';
 
-export const balanceAbi = [
+export const Erc20Abi = [
   {
     inputs: [
       {
@@ -21,6 +21,26 @@ export const balanceAbi = [
     stateMutability: 'view',
     type: 'function',
   },
+  {
+    inputs: [
+      { internalType: 'address', name: 'spender', type: 'address' },
+      { internalType: 'uint256', name: 'amount', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'owner', type: 'address' },
+      { internalType: 'address', name: 'spender', type: 'address' },
+    ],
+    name: 'allowance',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ];
 
 export const formatBalance = (balance: any) => {
@@ -30,13 +50,14 @@ export const formatBalance = (balance: any) => {
       .split('.')[1]
       .substr(0, 4)}`;
   }
-  return parseFloat(balance)
-    .toFixed(4)
-    .toString();
+  return parseFloat(balance).toFixed(4).toString();
 };
 
-
-export const getTokenBalance = async (address :string, account: string, signer: any) => {
-    const erc20token = new ethers.Contract(address, balanceAbi, signer);
-    return formatBalance(convertToEther(await erc20token.balanceOf(account)));
-}
+export const getTokenBalance = async (
+  address: string,
+  account: string,
+  signer: any,
+) => {
+  const erc20token = new ethers.Contract(address, Erc20Abi, signer);
+  return formatBalance(convertToEther(await erc20token.balanceOf(account)));
+};

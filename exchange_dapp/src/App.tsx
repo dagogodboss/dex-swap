@@ -60,10 +60,10 @@ function App() {
     }
     if (active && provider !== undefined) {
       setRewardToken(
-        new ethers.Contract(smartContracts.protoFire, protoAbi.abi, provider),
+        new ethers.Contract(smartContracts.protoFire, protoAbi.abi, signer),
       );
       setDexToken(
-        new ethers.Contract(smartContracts.dexSwap, dexSwapAbi.abi, provider),
+        new ethers.Contract(smartContracts.dexSwap, dexSwapAbi.abi, signer),
       );
     }
   }, [active, provider]);
