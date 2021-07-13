@@ -34,15 +34,23 @@ const ExchangeBox = ({
   const [inputErrorClass, setInputErrorClass] = useState(false);
   const [buttonText, setButtonText] = useState('Buy Token');
   const [buttonColor, setButtonColor] = useState('btn-info');
+  const [errorMessage, setErrorMessage] = useState('');
   const [buttonSize, setButtonSize] = useState('');
   const [sellToken, setSellToken] = useState<any>(false);
   const [loading, setLoading] = useState<any>(false);
   const [disableOutput, setDisableOutput] = useState<any>(true);
   const [rewardTokenBalance, setRewardTokenBalance] = useState<any>(0);
+
   useEffect(() => {
     (async () => {
       if (!isEmpty(dexToken)) {
-        setPrice(exchangeRate(convertToEther(await dexToken.price())));
+        try {
+          setPrice(exchangeRate(convertToEther(await dexToken.price())));
+        } catch (e) {
+          setErrorMessage(
+            'Oops we encountered and Error. Please make sure you are connected to Rinkeby Network on Your MetaMask',
+          );
+        }
       }
     })();
   }, [dexToken]);
@@ -50,12 +58,18 @@ const ExchangeBox = ({
   useEffect(() => {
     (async () => {
       if (active) {
-        const balance = await getTokenBalance(
-          rewardToken.address,
-          account,
-          signer,
-        );
-        setRewardTokenBalance(balance);
+        try {
+          const balance = await getTokenBalance(
+            rewardToken.address,
+            account,
+            signer,
+          );
+          setRewardTokenBalance(balance);
+        } catch (e) {
+          setErrorMessage(
+            'Oops we encountered and Error. Please make sure you are connected to Rinkeby Network on Your MetaMask',
+          );
+        }
       }
     })();
   }, [active]);
@@ -73,10 +87,16 @@ const ExchangeBox = ({
 
   const filterSelectedData = (e: any) => {
     if (active) {
-      getTokenBalance(e.value, account, signer).then((balance) => {
-        e.balance = balance;
-        setSelectedToken(e);
-      });
+      getTokenBalance(e.value, account, signer)
+        .then((balance) => {
+          e.balance = balance;
+          setSelectedToken(e);
+        })
+        .catch((errMessage) => {
+          setErrorMessage(
+            'Ops we encountered an Error. Please make sure you are connected to Rinkeby Network on Your MetaMask',
+          );
+        });
     } else {
       setSelectedToken(e);
     }
@@ -128,13 +148,19 @@ const ExchangeBox = ({
   ];
   useEffect(() => {
     if (!isEmpty(selectedToken) && active) {
-      setErc20Token(
-        new ethers.Contract(
-          sellToken ? rewardToken.address : selectedToken.value,
-          Erc20Abi,
-          signer,
-        ),
-      );
+      try {
+        setErc20Token(
+          new ethers.Contract(
+            sellToken ? rewardToken.address : selectedToken.value,
+            Erc20Abi,
+            signer,
+          ),
+        );
+      } catch (e) {
+        setErrorMessage(
+          'Ops we encountered an Error. Please make sure you are connected to Rinkeby Network on Your MetaMask',
+        );
+      }
     }
   }, [selectedToken]);
 
@@ -297,9 +323,23 @@ const ExchangeBox = ({
         src="protofire.svg"
         style={{ margin: '40px auto', display: 'block' }}
       />
-      <span className="login100-form-title p-b-43">
-        Proto-Fire Dex Swap Task
-      </span>
+      {errorMessage.length === 0 ? (
+        <span className="login100-form-title p-b-43">
+          Proto-Fire Dex Swap Task
+        </span>
+      ) : (
+        <span
+          style={{
+            fontSize: 'small',
+            lineHeight: '1.2rem',
+            borderRadius: '10px',
+          }}
+          className="bg-danger p-t-2 text-left p-l-10 login100-form-title p-b-2 text-white"
+        >
+          {errorMessage}
+        </span>
+      )}
+
       <div className="container-fluid">
         <div className="row">
           <div className="col-4">
