@@ -166,10 +166,7 @@ const ExchangeBox = ({
   }, [selectedToken]);
 
   const validate = (): boolean => {
-    if (
-      parseFloat(inputAmount) === 0 ||
-      (!inputAmount && !isEmpty(selectedToken) && active)
-    ) {
+    if (parseFloat(inputAmount) === 0) {
       setInputErrorClass(true);
       setButtonText(sellToken ? 'Sell Token' : 'Buy Token');
       setButtonText('Enter Amount');
