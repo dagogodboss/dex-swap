@@ -166,9 +166,13 @@ const ExchangeBox = ({
   }, [selectedToken]);
 
   const validate = (): boolean => {
-    if (parseFloat(inputAmount) === 0) {
+    if (
+      parseFloat(inputAmount) === 0 ||
+      (!inputAmount && !isEmpty(selectedToken) && active)
+    ) {
       setInputErrorClass(true);
       setButtonText(sellToken ? 'Sell Token' : 'Buy Token');
+      setButtonText('Enter Amount');
       setInputAmount(0);
       return false;
     }
@@ -207,6 +211,11 @@ const ExchangeBox = ({
 
   useEffect(() => {
     validate();
+    if (!inputAmount && !isEmpty(selectedToken) && active) {
+      setButtonText(sellToken ? 'Sell Token' : 'Buy Token');
+      setButtonText('Enter Amount');
+      return;
+    }
     if (Number(inputAmount) > 0) {
       setInputErrorClass(false);
       setButtonText(sellToken ? 'Sell Token' : 'Buy Token');
@@ -214,6 +223,7 @@ const ExchangeBox = ({
       setButtonSize('btn-md');
       return;
     }
+
     if (active && !isEmpty(selectedToken)) {
       setInputAmount(inputAmount);
       const amount = parseFloat(inputAmount) * parseFloat(price);
