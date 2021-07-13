@@ -36,6 +36,6 @@ describe('De-Centralize Exchange Swap ', () => {
     it('can sell TOK tokens ', async () => {
         const { address } = buyer;
         await TOK.approve(seller.address, 5000);
-        await expect(seller.buyTokens(Dai.address, 5000)).to.emit(seller, 'buyTokensEvent');
+        await expect(seller.sellTokens(Dai.address, 5000)).to.emit(seller, 'soldTokensEvent');
     });
 });
