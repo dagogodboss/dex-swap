@@ -163,7 +163,7 @@ const ExchangeBox = ({
         );
       }
     }
-  }, [selectedToken]);
+  }, [selectedToken, sellToken]);
 
   const validate = (): boolean => {
     if (parseFloat(inputAmount) === 0) {
@@ -206,6 +206,23 @@ const ExchangeBox = ({
     return true;
   };
 
+  const updateBalance = async () => {
+    try {
+      const choiceToken = selectedToken;
+      setRewardTokenBalance(
+        await getTokenBalance(rewardToken.address, account, signer),
+      );
+      choiceToken.balance = await getTokenBalance(
+        selectedToken.value,
+        account,
+        signer,
+      );
+      setSelectedToken(choiceToken);
+    } catch (e) {
+      console.log(e, signer);
+    }
+  };
+
   useEffect(() => {
     validate();
     if (!inputAmount && !isEmpty(selectedToken) && active) {
@@ -243,6 +260,7 @@ const ExchangeBox = ({
           convertToWei(inputAmount),
         );
         await buy.wait(1);
+        await updateBalance();
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -266,6 +284,7 @@ const ExchangeBox = ({
           convertToWei(outputAmount.toString()),
         );
         await sell.wait(1);
+        await updateBalance();
         setLoading(false);
       } catch (error) {
         console.log(error);
